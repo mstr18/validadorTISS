@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template_string, redirect
+from flask import Flask, request, render_template, redirect
 from lxml import etree
 from urllib.parse import unquote
 import os
@@ -72,25 +72,9 @@ def upload_file():
         xsd_path = os.path.join(SCHEMA_FOLDER, xsd_filename)
         errors = validar_xml_contra_xsd(filepath, xsd_path)
 
-        return render_template_string('''<h1>Resultados da Validação</h1>
-                                         <p>{{ errors|safe }}</p>
-                                         <a href="/">Tentar outro arquivo</a>''', errors=errors)
-    
-    dropdown_html = '<select name="version">'
-    for versao in versoes_tiss:
-        dropdown_html += f'<option value="{versao}">{versao}</option>'
-    dropdown_html += '</select>'
+        return render_template('errors.html', errors=errors)
 
-    return render_template_string(f'''
-    <!doctype html>
-    <title>Upload de XML para Validação</title>
-    <h1>Upload de XML para validação com XSD</h1>
-    <form method="post" enctype="multipart/form-data">
-      Versão TISS: {dropdown_html}
-      <br><input type="file" name="file">
-      <input type="submit" value="Upload">
-    </form>
-    ''')
+    return render_template('index.html', versoes_tiss=versoes_tiss)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
