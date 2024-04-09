@@ -72,7 +72,7 @@ def upload_file():
         xsd_path = os.path.join(SCHEMA_FOLDER, xsd_filename)
         errors = validar_xml_contra_xsd(filepath, xsd_path)
 
-        return render_template('errors.html', errors=errors)
+        return render_template('errors.html', errors=errors, selected_version=selected_version)
 
     return render_template('index.html', versoes_tiss=versoes_tiss)
 
