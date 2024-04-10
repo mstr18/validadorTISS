@@ -58,23 +58,25 @@ def validar_xml_contra_xsd(xml_path, xsd_path):
     except Exception as e:
         return f"Erro desconhecido ao validar o XML: {e}"
 
-@app.route('/', methods=['GET', 'POST'])
-def upload_file():
+@app.route('/', methods=['GET'])
+def upload_file_get():
     versoes_tiss = listar_versoes_tiss(SCHEMA_FOLDER)
-    if request.method == 'POST':
-        selected_version = request.form.get('version').replace('.', '_')
-        file = request.files['file']
-        if 'file' not in request.files or not file or not file.filename.endswith('.xml'):
-            return redirect(request.url)
-        filepath = os.path.join(UPLOAD_FOLDER, file.filename)
-        file.save(filepath)
-        xsd_filename = f"tissV{selected_version}.xsd"
-        xsd_path = os.path.join(SCHEMA_FOLDER, xsd_filename)
-        errors = validar_xml_contra_xsd(filepath, xsd_path)
-
-        return render_template('errors.html', errors=errors, selected_version=selected_version)
-
     return render_template('index.html', versoes_tiss=versoes_tiss)
+
+@app.route('/', methods=['POST'])
+def upload_file_post():
+    selected_version = request.form.get('version').replace('.', '_')
+    file = request.files['file']
+    if 'file' not in request.files or not file or not file.filename.endswith('.xml'):
+        return redirect(request.url)
+    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+    file.save(filepath)
+    xsd_filename = f"tissV{selected_version}.xsd"
+    xsd_path = os.path.join(SCHEMA_FOLDER, xsd_filename)
+    errors = validar_xml_contra_xsd(filepath, xsd_path)
+
+    return render_template('errors.html', errors=errors, selected_version=selected_version)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
