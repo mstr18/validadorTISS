@@ -51,12 +51,21 @@ def validar_xml_contra_xsd(xml_path, xsd_path):
             try:
                 with open(xml_path, 'rb') as xml_file:
                     xml_doc = etree.parse(xml_file)
+                    for elem in xml_doc.iter():
+                        if elem.text is None:
+                            elem.text = ""
                 schema.assertValid(xml_doc)
                 return "O XML é válido de acordo com o schema XSD fornecido."
-            except UnicodeDecodeError:
-                print(f"Falha ao ler o arquivo XML com a codificação {cod}")
+            except IOError as e:
+                print(f"Falha ao abrir o arquivo {xml_path}: {e}")
+                return "Falha ao abrir o arquivo"
+            except UnicodeDecodeError as e:
+                print(f"Falha ao ler o arquivo XML {xml_path} com a codificação {cod}: {e}")
+                return "Falha ao ler o arquivo XML"
             except etree.XMLSyntaxError as e:
-                print(f"Erro de análise XML: {e}")
+                print(f"Erro de análise XML no arquivo {xml_path}: {e}")
+                return "Erro de análise XML"
+
 
     except IOError as e:
         return f"Erro ao carregar o schema XSD: {e}"

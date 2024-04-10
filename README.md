@@ -15,6 +15,9 @@ Aqui estão algumas das exceções XML que já foram tratadas pelo validador:
 - `TISSVersionError`: Erro lançado quando uma versão não suportada do TISS é detectada.
 - `EncodingError`: Erro lançado quando há problemas relacionados à codificação do arquivo XML.
 - `FileReadError`: Erro lançado quando o arquivo XML não pode ser lido corretamente.
+- `IOError`: Esse erro é lançado quando há algum problema ao abrir o arquivo XML.
+- `Falta de Tags`: Caso faltar alguma tag no arquivo XML, o validador irá inserir uma string vazia para que não estoure um erro.
+
 
 ## Como Usar
 
