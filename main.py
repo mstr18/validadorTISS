@@ -46,11 +46,18 @@ def validar_xml_contra_xsd(xml_path, xsd_path):
 
         schema = etree.XMLSchema(schema_doc)
         
-        with open(xml_path, 'rb') as xml_file:
-            xml_doc = etree.parse(xml_file)
+        codificacoes = ['utf-8', 'iso-8859-1', 'windows-1252']  # Adicione mais codificações se necessário
+        for cod in codificacoes:
+            try:
+                with open(xml_path, 'rb') as xml_file:
+                    xml_doc = etree.parse(xml_file)
+                schema.assertValid(xml_doc)
+                return "O XML é válido de acordo com o schema XSD fornecido."
+            except UnicodeDecodeError:
+                print(f"Falha ao ler o arquivo XML com a codificação {cod}")
+            except etree.XMLSyntaxError as e:
+                print(f"Erro de análise XML: {e}")
 
-        schema.assertValid(xml_doc)
-        return "O XML é válido de acordo com o schema XSD fornecido."
     except IOError as e:
         return f"Erro ao carregar o schema XSD: {e}"
     except etree.XMLSchemaError as e:
