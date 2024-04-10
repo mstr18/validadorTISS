@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="d-flex justify-content-center align-items-center border full-height">
+    <div class="d-flex justify-content-center align-items-center full-height">
         <form id="uploadForm" class="text-center align-items-center" method="post" enctype="multipart/form-data">
             <h1 class="text-center">Upload de XML para validação com XSD</h1>
             <h4 class="text-center">Versão TISS:</h4>
@@ -17,7 +17,7 @@
                     <option value="{{ versao }}" {% if valor_selecionado == versao %}selected{% endif %}>{{ versao }}</option>
                 {% endfor %}
             </select>
-            <br><input id="fileInput" type="file" name="file">
+            <br><input id="fileInput" accept=".xml" type="file" name="file">
             <input class="btn btn-primary" type="submit" value="Upload">
         </form>
     </div>

@@ -17,7 +17,7 @@ Aqui estão algumas das exceções XML que já foram tratadas pelo validador:
 - `FileReadError`: Erro lançado quando o arquivo XML não pode ser lido corretamente.
 - `IOError`: Esse erro é lançado quando há algum problema ao abrir o arquivo XML.
 - `Falta de Tags`: Caso faltar alguma tag no arquivo XML, o validador irá inserir uma string vazia para que não estoure um erro.
-
+- `Arquivo não é um XML`: Caso o arquivo enviado não for um XML o sistema trata e exibe uma mensagem de erro. Além disso, ao inserir o arquivo apenas o XML é permitido.
 
 ## Como Usar
 

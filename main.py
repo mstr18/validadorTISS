@@ -79,19 +79,30 @@ def upload_file_get():
     versoes_tiss = listar_versoes_tiss(SCHEMA_FOLDER)
     return render_template('index.html', versoes_tiss=versoes_tiss)
 
+
 @app.route('/', methods=['POST'])
 def upload_file_post():
     selected_version = request.form.get('version').replace('.', '_')
     file = request.files['file']
+    errors = []
+    result = []
     if 'file' not in request.files or not file or not file.filename.endswith('.xml'):
-        return redirect(request.url)
-    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
-    file.save(filepath)
-    xsd_filename = f"tissV{selected_version}.xsd"
-    xsd_path = os.path.join(SCHEMA_FOLDER, xsd_filename)
-    errors = validar_xml_contra_xsd(filepath, xsd_path)
-
-    return render_template('errors.html', errors=errors, selected_version=selected_version)
+        errors.append(f"Erro: O arquivo que você inseriu {file.filename} não é um arquivo com o final .xml. Apenas arquivos .xml são aceitos.")
+    else:
+        filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(filepath)
+        xsd_filename = f"tissV{selected_version}.xsd"
+        xsd_path = os.path.join(SCHEMA_FOLDER, xsd_filename)
+        validation_errors = validar_xml_contra_xsd(filepath, xsd_path)
+        if validation_errors == "O XML é válido de acordo com o schema XSD fornecido.":
+            result.append(validation_errors)
+        else:
+            errors.append(validation_errors)
+            
+    errors = ''.join(errors)
+    result = ''.join(result)
+            
+    return render_template('errors.html', errors=errors, result=result, selected_version=selected_version)
 
 
 if __name__ == '__main__':
