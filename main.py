@@ -1,10 +1,16 @@
 from flask import Flask, request, render_template, redirect
+import google.generativeai as genai
 from lxml import etree
 from urllib.parse import unquote
 import os
 import re
 
 app = Flask(__name__)
+genai.configure(api_key="AIzaSyACwhkVuzzzK4tXoSarhqaL9Y4CJ-FUc3M")
+generation_config = {
+    "temperature": 0.9,
+}
+model = genai.GenerativeModel(model_name="gemini-1.0-pro", generation_config=generation_config)
 
 UPLOAD_FOLDER = 'uploads'
 SCHEMA_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'arquivos_schemas_ans_tiss')
@@ -29,6 +35,35 @@ class SchemaResolver(etree.Resolver):
             path = path[1:]
 
         return self.resolve_filename(path, context)
+
+
+def corrigir_xml_gpt3(xml_path):
+
+    with open(xml_path, 'r') as file:
+        xml_content = file.read()
+
+    prompt = f"Por favor, corrija os erros neste arquivo XML: {xml_content}. Me dê como saída apenas o código XML alterado sem comentários ou explicações. Não omita nenhuma parte do código. Não abrevie o código pois vou gravá-lo de volta no xml. Não pare de gerar até que o XML esteja completo."
+    convo = model.start_chat(history=[
+        {
+            "role": "user",
+            "parts": ["gere o código xml sem parar até terminar"]
+        },
+        {
+            "role": "model",
+            "parts": ["```xml\n\n```"]
+        },
+        ])
+
+    convo.send_message(prompt)
+    response = convo.last.text
+    response_editado = response.replace("```xml", " ")
+    print(convo.last.text)
+
+    with open(xml_path, 'w') as file:
+        file.write(response_editado)
+
+    return xml_path
+
 
 def listar_versoes_tiss(diretorio_schema):
     versoes = set()
@@ -94,6 +129,7 @@ def upload_file_post():
         xsd_filename = f"tissV{selected_version}.xsd"
         xsd_path = os.path.join(SCHEMA_FOLDER, xsd_filename)
         validation_errors = validar_xml_contra_xsd(filepath, xsd_path)
+        corrigir_xml_gpt3(filepath)
         if validation_errors == "O XML é válido de acordo com o schema XSD fornecido.":
             result.append(validation_errors)
         else:
