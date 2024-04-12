@@ -26,3 +26,9 @@ Para utilizar o validador, siga os passos abaixo:
 1. Clone o repositório para sua máquina local.
 2. Instale as dependências necessárias utilizando `pip install -r requirements.txt`.
 3. Execute o validador com o comando `python main.py`.
+
+Ou utilize a imagem docker disponível no Docker Hub:
+
+```
+docker pull chiapettaiago/validadorxml:latest
+```
