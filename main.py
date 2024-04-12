@@ -42,36 +42,54 @@ def corrigir_parte_xml(metade, erro):
     while contador == 0:
         prompt = f"Por favor, corrija o erro {erro} nesta parte do arquivo XML: {metade}. Me dê como saída apenas o código XML alterado sem comentários ou explicações. Não omita nenhuma parte do código. Não abrevie o código pois vou gravá-lo de volta no xml. Não pare de gerar até que o XML esteja completo."
         convo = model.start_chat(history=[
-            {
-                "role": "user",
-                "parts": ["You are an artificial intelligence made to correct xml files that will be input by the user"]
-            },
-            {
-                "role": "model",
-                "parts": ["**XML Correction Assistant**\n\n**Purpose:** To correct errors in XML files provided by the user.\n\n**Capabilities:**\n\n* Validation: Checks XML files against standards (e.g., XML Schema, DTD) and identifies errors.\n* Error identification: Detects common XML errors, such as:\n    * Invalid syntax\n    * Missing or duplicate elements/attributes\n    * Invalid character entities\n    * Well-formedness issues\n* Error correction: Automatically corrects identified errors using predefined rules and heuristics.\n* Comprehensive reporting: Provides detailed reports summarizing the identified and corrected errors.\n\n**Usage:**\n\n1. **Input XML File:** Provide the XML file that needs to be corrected as input.\n2. **Validation:** The assistant will validate the XML file against relevant XML Schemas or DTDs.\n3. **Error Identification:** The assistant will identify and display a list of detected errors.\n4. **Error Correction:** The assistant will automatically correct identified errors, providing a corrected XML file.\n5. **Reporting:** A comprehensive report will be generated, outlining the errors found and the corrections made.\n\n**Benefits:**\n\n* **Accuracy:** Ensures the corrected XML files conform to XML standards, improving their reliability.\n* **Time-saving:** Automates error identification and correction processes, saving users time and effort.\n* **Improved data quality:** Corrected XML files enhance the quality of data used in applications or systems.\n* **Compliance:** Helps organizations meet XML data exchange requirements by providing error-free files.\n\n**Note:** The correction capabilities of this assistant are limited to predefined error types. For complex or custom XML errors, manual review and correction may still be necessary."]
-            },
-            {
-                "role": "user",
-                "parts": ["You must generate the complete xml"]
-            },
-            {
-                "role": "model",
-                "parts": ["**Complete XML Generation**\n\n**Purpose:** To generate a complete XML file based on user-provided input data.\n\n**Capabilities:**\n\n* Data parsing: Converts user-provided data into a structured XML format.\n* Element and attribute creation: Generates XML elements and attributes based on the input data.\n* XML Schema validation: Ensures the generated XML file conforms to a specified XML Schema.\n* Well-formedness: Produces XML files that adhere to XML well-formedness rules.\n\n**Usage:**\n\n1. **Input Data:** Provide the data that needs to be converted into XML format. This data can be in various formats, such as CSV, JSON, or even plain text.\n2. **Data Parsing:** The assistant will parse the input data and identify the relevant elements and attributes.\n3. **XML Schema:** Specify the XML Schema that the generated XML file should conform to. This ensures that the XML structure and data types are valid.\n4. **Element and Attribute Creation:** The assistant will generate the corresponding XML elements and attributes based on the parsed data and the specified XML Schema.\n5. **XML File Generation:** The assistant will assemble the generated elements and attributes into a complete XML file.\n\n**Benefits:**\n\n* **Accuracy:** Ensures that the generated XML files are structurally and semantically correct.\n* **Efficiency:** Automates the process of XML file generation, saving users time and effort.\n* **Flexibility:** Supports various input data formats, making it adaptable to different data sources.\n* **Compliance:** Helps organizations meet XML data exchange requirements by providing well-formed and schema-compliant XML files.\n\n**Note:** The complexity of the generated XML files is dependent on the input data and the specified XML Schema. For highly complex XML structures, manual review and editing may still be necessary."]
-            },
-            {
-                "role": "user",
-                "parts": ["don't forget to always close the open tags"]
-            },
-            {
-                "role": "model",
-                "parts": ["**Automatic Tag Closure**\n\n**Purpose:** To ensure that all open tags in an XML file are properly closed.\n\n**Capabilities:**\n\n* Tag identification: Identifies all open and closed tags in the XML file.\n* Automatic closure: Automatically inserts missing closing tags for any unclosed open tags.\n* Well-formedness: Ensures that the resulting XML file is well-formed and conforms to XML standards.\n\n**Usage:**\n\n1. **Input XML File:** Provide the XML file that needs to be checked for open tags.\n2. **Tag Identification:** The assistant will scan the XML file and identify all open and closed tags.\n3. **Automatic Closure:** For any unclosed open tags, the assistant will automatically insert the corresponding closing tags.\n4. **Well-formedness Validation:** The assistant will validate the modified XML file to ensure that it is well-formed.\n\n**Benefits:**\n\n* **Accuracy:** Ensures that all XML tags are properly closed, improving the reliability of the XML file.\n* **Time-saving:** Automates the process of identifying and closing open tags, saving users time and effort.\n* **Improved data quality:** Properly closed XML tags enhance the quality of data used in applications or systems.\n* **Compliance:** Helps organizations meet XML data exchange requirements by providing well-formed XML files.\n\n**Note:** This capability assumes that the XML file is otherwise well-formed and contains no other errors. For complex or malformed XML files, manual review and correction may still be necessary."]
-            },
-            ])
-
+        {
+            "role": "user",
+            "parts": ["You are an artificial intelligence made to correct xml files that will be input by the user"]
+        },
+        {
+            "role": "model",
+            "parts": ["```xml\n\n```"]
+        },
+        {
+            "role": "user",
+            "parts": ["You must generate the complete xml"]
+        },
+        {
+            "role": "model",
+            "parts": ["```xml\n\n```"]
+        },
+        {
+            "role": "user",
+            "parts": ["don't forget to always close the open tags"]
+        },
+        {
+            "role": "model",
+            "parts": ["```xml\n"]
+        },
+        {
+            "role": "user",
+            "parts": ["If there is a value with 4 decimal places, round up"]
+        },
+        {
+            "role": "model",
+            "parts": ["```xml\n\n\n```\n\nOutput:\n\n```xml\n\n\n```"]
+        },
+        
+          {
+            "role": "user",
+            "parts": ["quantidadeExecutada e ReducaoAcrescimo devem ter o mesmo valor sempre. Altere para que fique assim."]
+        },
+        {
+            "role": "model",
+            "parts": ["Input:\n\n```xml\n\n```\n\nOutput:\n\n```xml\n\n```"]
+        },
+        ])
         convo.send_message(prompt)
         response = convo.last.text
-        response_editado = response.replace("```xml", " ")
-        print(convo.last.text)
+        response1 = response.replace("```", " ")
+        response2 = response1.replace("xml", " ")
+        response_editado = response2.replace("```xml", " ")
+        print(response_editado)
 
         contador += 1
     return response_editado
@@ -82,18 +100,79 @@ def corrigir_xml_gpt3(xml_path, erro):
     with open(xml_path, 'r') as file:
         xml_content = file.read()
 
-    parte1 = xml_content[:len(xml_content)//4]
-    parte2 = xml_content[len(xml_content)//4:2*len(xml_content)//4]
-    parte3 = xml_content[2*len(xml_content)//4:3*len(xml_content)//4]
-    parte4 = xml_content[3*len(xml_content)//4:]
+    parte1 = xml_content[:len(xml_content)//30]
+    parte2 = xml_content[len(xml_content)//30:2*len(xml_content)//30]
+    parte3 = xml_content[2*len(xml_content)//30:3*len(xml_content)//30]
+    parte4 = xml_content[3*len(xml_content)//30:4*len(xml_content)//30]
+    parte5 = xml_content[4*len(xml_content)//30:5*len(xml_content)//30]
+    parte6 = xml_content[5*len(xml_content)//30:6*len(xml_content)//30]
+    parte7 = xml_content[6*len(xml_content)//30:7*len(xml_content)//30]
+    parte8 = xml_content[7*len(xml_content)//30:8*len(xml_content)//30]
+    parte9 = xml_content[8*len(xml_content)//30:9*len(xml_content)//30]
+    parte10 = xml_content[9*len(xml_content)//30:10*len(xml_content)//30]
+    parte11 = xml_content[10*len(xml_content)//30:11*len(xml_content)//30]
+    parte12 = xml_content[11*len(xml_content)//30:12*len(xml_content)//30]
+    parte13 = xml_content[12*len(xml_content)//30:13*len(xml_content)//30]
+    parte14 = xml_content[13*len(xml_content)//30:14*len(xml_content)//30]
+    parte15 = xml_content[14*len(xml_content)//30:15*len(xml_content)//30]
+    parte16 = xml_content[15*len(xml_content)//30:16*len(xml_content)//30]
+    parte17 = xml_content[16*len(xml_content)//30:17*len(xml_content)//30]
+    parte18 = xml_content[17*len(xml_content)//30:18*len(xml_content)//30]
+    parte19 = xml_content[18*len(xml_content)//30:19*len(xml_content)//30]
+    parte20 = xml_content[19*len(xml_content)//30:20*len(xml_content)//30]
+    parte21 = xml_content[20*len(xml_content)//30:21*len(xml_content)//30]
+    parte22 = xml_content[21*len(xml_content)//30:22*len(xml_content)//30]
+    parte23 = xml_content[22*len(xml_content)//30:23*len(xml_content)//30]
+    parte24 = xml_content[23*len(xml_content)//30:24*len(xml_content)//30]
+    parte25 = xml_content[24*len(xml_content)//30:25*len(xml_content)//30]
+    parte26 = xml_content[25*len(xml_content)//30:26*len(xml_content)//30]
+    parte27 = xml_content[26*len(xml_content)//30:27*len(xml_content)//30]
+    parte28 = xml_content[27*len(xml_content)//30:28*len(xml_content)//30]
+    parte29 = xml_content[28*len(xml_content)//30:29*len(xml_content)//30]
+    parte30 = xml_content[29*len(xml_content)//30:]
+
 
     response_editado1 = corrigir_parte_xml(parte1, erro)
     response_editado2 = corrigir_parte_xml(parte2, erro)
     response_editado3 = corrigir_parte_xml(parte3, erro)
-    response_editado3 = corrigir_parte_xml(parte4, erro)
+    response_editado4 = corrigir_parte_xml(parte4, erro)
+    response_editado5 = corrigir_parte_xml(parte5, erro)
+    response_editado6 = corrigir_parte_xml(parte6, erro)
+    response_editado7 = corrigir_parte_xml(parte7, erro)
+    response_editado8 = corrigir_parte_xml(parte8, erro)
+    response_editado9 = corrigir_parte_xml(parte9, erro)
+    response_editado10 = corrigir_parte_xml(parte10, erro)
+    response_editado11 = corrigir_parte_xml(parte11, erro)
+    response_editado12 = corrigir_parte_xml(parte12, erro)
+    response_editado13 = corrigir_parte_xml(parte13, erro)
+    response_editado14 = corrigir_parte_xml(parte14, erro)
+    response_editado15 = corrigir_parte_xml(parte15, erro)
+    response_editado16 = corrigir_parte_xml(parte16, erro)
+    response_editado17 = corrigir_parte_xml(parte17, erro)
+    response_editado18 = corrigir_parte_xml(parte18, erro)
+    response_editado19 = corrigir_parte_xml(parte19, erro)
+    response_editado20 = corrigir_parte_xml(parte20, erro)
+    response_editado21 = corrigir_parte_xml(parte21, erro)
+    response_editado22 = corrigir_parte_xml(parte22, erro)
+    response_editado23 = corrigir_parte_xml(parte23, erro)
+    response_editado24 = corrigir_parte_xml(parte24, erro)
+    response_editado25 = corrigir_parte_xml(parte25, erro)
+    response_editado26 = corrigir_parte_xml(parte26, erro)
+    response_editado27 = corrigir_parte_xml(parte27, erro)
+    response_editado28 = corrigir_parte_xml(parte28, erro)
+    response_editado29 = corrigir_parte_xml(parte29, erro)
+    response_editado30 = corrigir_parte_xml(parte30, erro)
+
 
     with open(xml_path, 'w') as file:
-        file.write(response_editado1 + response_editado2 + response_editado3)
+        file.write(response_editado1 + response_editado2 + response_editado3 + response_editado4 + response_editado5 +
+           response_editado6 + response_editado7 + response_editado8 + response_editado9 + response_editado10 +
+           response_editado11 + response_editado12 + response_editado13 + response_editado14 + response_editado15 +
+           response_editado16 + response_editado17 + response_editado18 + response_editado19 + response_editado20 +
+           response_editado21 + response_editado22 + response_editado23 + response_editado24 + response_editado25 +
+           response_editado26 + response_editado27 + response_editado28 + response_editado29 + response_editado30)
+
+
             
     return xml_path
 
@@ -165,6 +244,7 @@ def upload_file_post():
         validation_errors = validar_xml_contra_xsd(filepath, xsd_path)
         if validation_errors == "O XML é válido de acordo com o schema XSD fornecido.":
             result.append(validation_errors)
+            corrigir_xml_gpt3(filepath, validation_errors)
         else:
             errors.append(validation_errors)
             corrigir_xml_gpt3(filepath, validation_errors)
