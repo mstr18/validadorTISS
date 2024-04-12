@@ -11,6 +11,9 @@
     <div class="d-flex justify-content-center align-items-center full-height">
         <form id="uploadForm" class="text-center align-items-center" method="post" enctype="multipart/form-data">
             <h1 class="text-center">Upload de XML para validação com XSD</h1>
+            <div id="processing-message" style="display:none;">
+                <h5 class="text-primary">Foram encontrados erros. Aguarde, enquanto corrigimos seu arquivo XML...</h5>
+            </div>
             <h4 class="text-center">Versão TISS:</h4>
             <select id="versionSelect" name="version">
                 {% for versao in versoes_tiss %}
@@ -18,7 +21,7 @@
                 {% endfor %}
             </select>
             <br><input id="fileInput" accept=".xml" type="file" name="file">
-            <input class="btn btn-primary" type="submit" value="Upload">
+            <input class="btn btn-primary" onclick="corrigirArquivo()" type="submit"s value="Upload">
         </form>
     </div>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>

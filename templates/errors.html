@@ -12,7 +12,7 @@
         <div class="card-body">
             <h2 class="text-center">Resultados da Validação</h2>
             {% if errors %}
-                <h5 class="text-center text-danger">{{ errors|safe }}</p><h5>
+                <h5 class="text-center text-danger">{{ errors|safe }}<h5>
             {% endif %}
             {% if result %}
                 <h5 class="text-center text-success">{{ result|safe }}</p><h5>
@@ -22,6 +22,20 @@
             </div>
         </div>
     </div>
+    {% if errors %}
+    <script>
+        function baixarArquivo() {
+            setTimeout(function() {
+                window.location.href = '/download?filename={{ filename }}';
+            }, 5000);
+        }
+
+        window.onload = function() {
+            baixarArquivo();
+            alert("O download do arquivo XML corrigido irá começar em 5 minutos...")
+        }
+    </script>
+    {% endif %}
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
