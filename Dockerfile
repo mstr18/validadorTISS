@@ -2,7 +2,7 @@
 FROM ubuntu:22.04
 
 # Atualize o sistema e instale o Python
-RUN apt-get update && apt-get install -y python3 python3-pip
+RUN apt-get update && apt-get install -y && apt dist-upgrade -y python3 python3-pip
 
 # Defina o diretório de trabalho no Docker
 WORKDIR /app

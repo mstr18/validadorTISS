@@ -32,3 +32,11 @@ Ou utilize a imagem docker disponível no Docker Hub:
 ```
 docker pull chiapettaiago/validadorxml:latest
 ```
+
+Para executar use o seguinte comando:
+
+```
+docker run -p 5000:5000 chiapettaiago/validadorxml:latest
+```
+
+Após isso basta digitar http://localhost:5000 no seu navegador e o validador xml vai abrir.
