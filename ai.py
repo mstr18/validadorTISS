@@ -1,4 +1,5 @@
 import google.generativeai as genai
+import time
 
 genai.configure(api_key="AIzaSyACwhkVuzzzK4tXoSarhqaL9Y4CJ-FUc3M")
 generation_config = {
@@ -61,11 +62,16 @@ def corrigir_xml_gpt3(xml_path):
     partes = []
 
     for i in range(1, 26):
-        parte = xml_content[(i-1)*len(xml_content)//25:i*len(xml_content)//25]
+        inicio = time.time()
+        parte = xml_content[(i-1)*len(xml_content)//26:i*len(xml_content)//26]
         partes.append(parte)
         response_editado = corrigir_parte_xml(parte)
         response_editado_list.append(response_editado)
         print(f"Loop {i} de 25.")
+        fim = time.time()
+        tempo = fim - inicio
+        print(tempo)
+
         
     file_content = ''.join(response_editado_list)
 

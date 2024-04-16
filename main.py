@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, redirect, send_file, jsonify
 from ai import corrigir_parte_xml, corrigir_xml_gpt3
 from validate import listar_versoes_tiss, validar_xml_contra_xsd
 import os
+import time 
 
 app = Flask(__name__)
 
@@ -52,6 +53,16 @@ def download_file():
     filename = request.args.get('filename')
     filepath = os.path.join(UPLOAD_FOLDER, filename)
     return send_file(filepath, as_attachment=True)
+
+@app.route('/progress')
+def progress():
+    def generate():
+        x = 1
+        while x <= 100:
+            time.sleep(30)  # Simula um trabalho sendo feito
+            yield f"data:{x}\n\n"
+            x += 4
+    return app.response_class(generate(), mimetype='text/event-stream')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
