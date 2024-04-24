@@ -13,9 +13,12 @@
             <h2 class="text-center">Resultados da Validação</h2>
             {% if errors %}
                 <h5 class="text-center text-danger">{{ errors|safe }}<h5>
+                <h5 class="text-center text-danger">{{ tiss|safe }}<h5>
+                
             {% endif %}
             {% if result %}
                 <h5 class="text-center text-success">{{ result|safe }}</p><h5>
+                <h5 class="text-center text-danger">{{ tiss|safe }}<h5>
             {% endif %}
             <div class="col d-flex justify-content-center">
                 <a href="/" class="btn btn-primary">Tentar outro arquivo</a>

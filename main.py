@@ -1,8 +1,8 @@
 from flask import Flask, request, render_template, redirect, send_file, jsonify
 from ai import corrigir_parte_xml, corrigir_xml_gpt3
-from validate import listar_versoes_tiss, validar_xml_contra_xsd
+from validate import listar_versoes_tiss, validar_xml_contra_xsd, find_padrao_tag
 import os
-import time 
+import time
 
 app = Flask(__name__)
 
@@ -23,7 +23,6 @@ def upload_file_get():
 
 @app.route('/', methods=['POST'])
 def upload_file_post():
-    selected_version = request.form.get('version').replace('.', '_')
     file = request.files['file']
     errors = []
     result = []
@@ -32,21 +31,35 @@ def upload_file_post():
     else:
         filepath = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(filepath)
-        xsd_filename = f"tissV{selected_version}.xsd"
-        xsd_path = os.path.join(SCHEMA_FOLDER, xsd_filename)
-        validation_errors = validar_xml_contra_xsd(filepath, xsd_path)
-        if validation_errors == "O XML é válido de acordo com o schema XSD fornecido.":
-            result.append(validation_errors)
-            corrigir_xml_gpt3(filepath)
-        else:
-            errors.append(validation_errors)
-            corrigir_xml_gpt3(filepath)
         
+        # Encontrar a versão TISS do arquivo XML
+        selected_version = None
+        for version in listar_versoes_tiss(SCHEMA_FOLDER):
+            version_short = version.replace('.', '_')
+            xsd_filename = f"tissV{version_short}.xsd"
+            xsd_path = os.path.join(SCHEMA_FOLDER, xsd_filename)
+            if validar_xml_contra_xsd(filepath, xsd_path) == "O XML é válido de acordo com o schema XSD fornecido.":
+                selected_version = version
+                break
+        
+        if selected_version is None:
+            errors.append(f"Erro: Não foi possível determinar a versão TISS do arquivo {file.filename}.")
+        else:
+            # Validar e corrigir o arquivo XML
+            validation_errors = validar_xml_contra_xsd(filepath, os.path.join(SCHEMA_FOLDER, f"tissV{selected_version.replace('.', '_')}.xsd"))
+            if validation_errors == "O XML é válido de acordo com o schema XSD fornecido.":
+                result.append(validation_errors)
+                corrigir_xml_gpt3(filepath)
+                tiss = find_padrao_tag(filepath)
+            else:
+                errors.append(validation_errors)
+                corrigir_xml_gpt3(filepath)
+                tiss = find_padrao_tag(filepath)
             
     errors = ''.join(errors)
     result = ''.join(result)
             
-    return render_template('errors.html', errors=errors, result=result, selected_version=selected_version, filename=file.filename)
+    return render_template('errors.html', errors=errors, result=result, selected_version=selected_version, tiss=tiss, filename=file.filename)
 
 @app.route('/download')
 def download_file():

@@ -1,4 +1,5 @@
 from lxml import etree
+import xml.etree.ElementTree as ET
 import os
 from urllib.parse import unquote
 import re
@@ -28,6 +29,20 @@ def listar_versoes_tiss(diretorio_schema):
             versoes.add(match.group(1).replace('_', '.'))
     return sorted(versoes)
 
+def find_padrao_tag(xml_file):
+
+    # Carregar o arquivo XML
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+    
+    # Obter o namespace a partir do elemento raiz
+    namespace = {'ans': root.tag.split('}')[0][1:]}
+    
+    # Procurar pela tag <ans:Padrao>3.05.00</ans:Padrao>
+    padrao_tag = root.find('.//ans:Padrao', namespace)
+    
+    return padrao_tag.text
+    
 def validar_xml_contra_xsd(xml_path, xsd_path):
     try:
         with open(xsd_path, 'rb') as xsd_file:

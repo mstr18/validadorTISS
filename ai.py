@@ -1,49 +1,20 @@
 import google.generativeai as genai
-import time
+import xml.etree.ElementTree as ET
+import math
 
 genai.configure(api_key="AIzaSyACwhkVuzzzK4tXoSarhqaL9Y4CJ-FUc3M")
 generation_config = {
     "temperature": 0.9,
+    "top_p": 1,
+    "top_k": 1,
+    "max_output_tokens": 2048,
 }
-model = genai.GenerativeModel(model_name="gemini-1.0-pro", generation_config=generation_config)
+model = genai.GenerativeModel(model_name="gemini-1.0-pro-001", generation_config=generation_config)
 
-def corrigir_parte_xml(metade):
-
-    prompt = f"Por favor, reescreva o arquivo XML {metade} para que possa atendar aos parâmetros que foram passados. Me dê como saída apenas o código XML alterado sem comentários ou explicações. Não omita nenhuma parte do código. Não abrevie o código pois vou gravá-lo de volta no xml. Não pare de gerar até que o XML esteja completo."
-    convo = model.start_chat(history=[
-    {
-        "role": "user",
-        "parts": ["You must generate the complete xml"]
-    },
-    {
-        "role": "model",
-        "parts": ["```xml\n\n```"]
-    },
-    {
-        "role": "user",
-        "parts": ["don't forget to always close the open tags"]
-    },
-    {
-        "role": "model",
-        "parts": ["```xml"]
-    },
-    {
-        "role": "user",
-        "parts": ["If there is a value with 4 decimal places, round up"]
-    },
-    {
-        "role": "model",
-        "parts": ["```xml\n\n\n```\n\nOutput:\n\n```xml\n\n\n```"]
-    },
-    {
-        "role": "user",
-        "parts": ["quantidadeExecutada and ReducaoAcrescimo must always have the same value. Change it so it looks like this."]
-    },
-    {
-        "role": "model",
-        "parts": ["```xml\n\n\n```\n\nOutput:\n\n```xml\n\n\n```"]
-    },
-    ])
+def corrigir_parte_xml(parte_xml):
+    prompt = f"Por favor, reescreva o seguinte arquivo XML de modo que não haja nenhuma tag aberta que fique sem fechar. Também caso exista algum valor com 4 casas decimais, arredonde para apenas duas. Me dê como saída apenas o código XML alterado sem comentários ou explicações. Não omita nenhuma parte do código. Não abrevie o código pois vou gravá-lo de volta no xml:\n\n{parte_xml}"
+    convo = model.start_chat(history=[])
+    
     convo.send_message(prompt)
     response = convo.last.text
     response1 = response.replace("```", " ")
@@ -53,30 +24,38 @@ def corrigir_parte_xml(metade):
 
     return response_editado
 
+def dividir_xml_em_partes(xml_path, max_part_size=2048):
+
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+    
+    # Converter o XML para uma string
+    xml_str = ET.tostring(root, encoding='unicode')
+    
+    # Calcular o número de partes
+    num_parts = math.ceil(len(xml_str) / max_part_size)
+    
+    # Dividir o XML em partes
+    parts = []
+    for i in range(num_parts):
+        start = i * max_part_size
+        end = (i + 1) * max_part_size
+        parts.append(xml_str[start:end])
+    
+    return parts
+
 def corrigir_xml_gpt3(xml_path):
+    parts = dividir_xml_em_partes(xml_path, max_part_size=1024)
 
-    with open(xml_path, 'r') as file:
-        xml_content = file.read()
-        
-    response_editado_list = []
-    partes = []
+    tasks = []
+    for parte in parts:
+        tasks.append(corrigir_parte_xml(parte))
 
-    for i in range(1, 26):
-        inicio = time.time()
-        parte = xml_content[(i-1)*len(xml_content)//26:i*len(xml_content)//26]
-        partes.append(parte)
-        response_editado = corrigir_parte_xml(parte)
-        response_editado_list.append(response_editado)
-        print(f"Loop {i} de 25.")
-        fim = time.time()
-        tempo = fim - inicio
-        print(tempo)
+    responses = tasks
 
-        
-    file_content = ''.join(response_editado_list)
+    file_content = ''.join(responses)
 
     with open(xml_path, 'w') as file:
         file.write(file_content)
             
     return xml_path
-
